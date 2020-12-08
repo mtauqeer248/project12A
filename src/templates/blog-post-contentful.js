@@ -5,8 +5,8 @@ import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
-const BlogPostTemplate = ({ data, location }) => {
-  const post = data.markdownRemark
+const BlogPostContentful = ({ data, location }) => {
+  const post = data.allContentfulBlog
   const siteTitle = data.site.siteMetadata?.title || `Title`
   const { previous, next } = data
 
@@ -46,14 +46,14 @@ const BlogPostTemplate = ({ data, location }) => {
         >
           <li>
             {previous && (
-              <Link to={previous.fields.slug} rel="prev">
+              <Link to={previous.fields.title} rel="prev">
                 ← {previous.frontmatter.title}
               </Link>
             )}
           </li>
           <li>
             {next && (
-              <Link to={next.fields.slug} rel="next">
+              <Link to={next.fields.title} rel="next">
                 {next.frontmatter.title} →
               </Link>
             )}
@@ -64,10 +64,10 @@ const BlogPostTemplate = ({ data, location }) => {
   )
 }
 
-export default BlogPostTemplate
+export default BlogPostContentful
 
 export const pageQuery = graphql`
-  query BlogPostBySlug(
+  query allContentfulBlog(
     $id: String!
     $previousPostId: String
     $nextPostId: String
@@ -77,17 +77,19 @@ export const pageQuery = graphql`
         title
       }
     }
-    markdownRemark(id: { eq: $id }) {
-      id
-      excerpt(pruneLength: 160)
-      html
-      frontmatter {
-        title
-        date(formatString: "MMMM DD, YYYY")
-        description
-      }
+    allContentfulBlog(id:{eq:$id}){
+     title
+     image{
+       fluid{
+         src
+       }
+     }
+     contentfeild{
+       raw
+     }
+   }
     }
-    previous: markdownRemark(id: { eq: $previousPostId }) {
+    previous: allContentfulBlog(id: { eq: $previousPostId }) {
       fields {
         slug
       }
@@ -95,7 +97,7 @@ export const pageQuery = graphql`
         title
       }
     }
-    next: markdownRemark(id: { eq: $nextPostId }) {
+    next: allContentfulBlog(id: { eq: $nextPostId }) {
       fields {
         slug
       }
